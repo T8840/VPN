@@ -1,7 +1,6 @@
 #!/bin/bash
 
 yum install -y git 
-git clone https://github.com/T8840/VPN.git
 cd VPN
 chmod +x ss.sh
-./sh.sh
+./sh.sh 2>&1 | tee ss.log
