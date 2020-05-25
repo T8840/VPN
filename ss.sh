@@ -162,9 +162,7 @@ pre_install(){
         exit 1
     fi
     # Set shadowsocks config password
-    echo "Please enter password for shadowsocks-python"
-    read -p "(Default password: teddysun.com):" shadowsockspwd
-    [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
+    shadowsockspwd="shadowsocks"
     echo
     echo "---------------------------"
     echo "password = ${shadowsockspwd}"
@@ -173,10 +171,7 @@ pre_install(){
     # Set shadowsocks config port
     while true
     do
-    dport=$(shuf -i 9000-19999 -n 1)
-    echo "Please enter a port for shadowsocks-python [1-65535]"
-    read -p "(Default port: ${dport}):" shadowsocksport
-    [ -z "$shadowsocksport" ] && shadowsocksport=${dport}
+    shadowsocksport=18800
     expr ${shadowsocksport} + 1 &>/dev/null
     if [ $? -eq 0 ]; then
         if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
@@ -199,8 +194,7 @@ pre_install(){
         hint="${ciphers[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-    read -p "Which cipher you'd select(Default: ${ciphers[0]}):" pick
-    [ -z "$pick" ] && pick=1
+    pick=7
     expr ${pick} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Please enter a number"
@@ -221,7 +215,8 @@ pre_install(){
 
     echo
     echo "Press any key to start...or Press Ctrl+C to cancel"
-    char=`get_char`
+    # 这里不注释，会暂停
+    #char=`get_char`
     # Install necessary dependencies
     if check_sys packageManager yum; then
         yum install -y python python-devel python-setuptools openssl openssl-devel curl wget unzip gcc automake autoconf make libtool
@@ -235,10 +230,10 @@ pre_install(){
 # Download files
 download_files(){
     # Download libsodium file
-    if ! wget --no-check-certificate -O ${libsodium_file}.tar.gz ${libsodium_url}; then
-        echo -e "[${red}Error${plain}] Failed to download ${libsodium_file}.tar.gz!"
-        exit 1
-    fi
+#    if ! wget --no-check-certificate -O ${libsodium_file}.tar.gz ${libsodium_url}; then
+#        echo -e "[${red}Error${plain}] Failed to download ${libsodium_file}.tar.gz!"
+#        exit 1
+#    fi
     # Download Shadowsocks file
     if ! wget --no-check-certificate -O shadowsocks-master.zip https://github.com/shadowsocks/shadowsocks/archive/master.zip; then
         echo -e "[${red}Error${plain}] Failed to download shadowsocks python file!"
@@ -308,19 +303,19 @@ firewall_set(){
 # Install Shadowsocks
 install(){
     # Install libsodium
-    if [ ! -f /usr/lib/libsodium.a ]; then
-        cd ${cur_dir}
-        tar zxf ${libsodium_file}.tar.gz
-        cd ${libsodium_file}
-        ./configure --prefix=/usr && make && make install
-        if [ $? -ne 0 ]; then
-            echo -e "[${red}Error${plain}] libsodium install failed!"
-            install_cleanup
-            exit 1
-        fi
-    fi
-
-    ldconfig
+#    if [ ! -f /usr/lib/libsodium.a ]; then
+#        cd ${cur_dir}
+#        tar zxf ${libsodium_file}.tar.gz
+#        cd ${libsodium_file}
+#        ./configure --prefix=/usr && make && make install
+#        if [ $? -ne 0 ]; then
+#            echo -e "[${red}Error${plain}] libsodium install failed!"
+#            install_cleanup
+#            exit 1
+#        fi
+#    fi
+#
+#    ldconfig
     # Install Shadowsocks
     cd ${cur_dir}
     unzip -q shadowsocks-master.zip
